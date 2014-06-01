@@ -1,7 +1,8 @@
-var mapboxId = 'jamestyack.hl98j78k';
+var mapboxId = 'jamestyack.i2bknm85';
 var mapboxUrl = 'http://{s}.tiles.mapbox.com/v3/' + mapboxId + '/{z}/{x}/{y}.png';
 var mapboxAttribution = '<a target="_blank" href="https://www.mapbox.com/about/maps/">© Mapbox © OpenStreetMap</a> <a class="mapbox-improve-map" target="_blank" href="https://www.mapbox.com/map-feedback/#examples.map-9ijuk24y/8.538/47.365/15">Improve this map</a>';
 var stationLayerGroups = {};
+var apartmentLayerGroups = {};
 var businessLayerGroup = null;
 var isFirstView = false;
 var accessTypeWheelchair = 'Wheelchair';
@@ -26,7 +27,7 @@ mapPosition["Fairmount"] = {
 	"zoom" : 12
 };
 
-var map = L.mapbox.map('map', mapboxId)
+var map = L.mapbox.map('apartMap', mapboxId)
 	.addControl(L.mapbox.geocoderControl(mapboxId))
 	.setView(mapPosition["Fairmount"]["coords"], mapPosition["Fairmount"]["zoom"])
 
@@ -36,26 +37,82 @@ $(document).ready(function() {
 	// ensures checkboxes reset in firefox
 	$(":checkbox").attr("autocomplete", "off");
 	
+	// Show/hide things based on radio button change
 	$('input[id*=line]').change(function() {
-		clearStationLayers();
-		populateStationLayerGroupsAndRefreshView(this.value);
+		//clearStationLayers();
+		//populateStationLayerGroupsAndRefreshView(this.value);
 	});
 
+	// show/hide based on checkboxes
 	$('input[id*=filter]').change(function() {
 		isFirstView = false;
 		if (this.checked) {
-			map.addLayer(stationLayerGroups[this.value]);
+			//map.addLayer(stationLayerGroups[this.value]);
 		} else {
-			map.removeLayer(stationLayerGroups[this.value]);
+			//map.removeLayer(stationLayerGroups[this.value]);
 		}
 	});
 
-	addLegend();
+	//addLegend();
 	addInfoBox();
 	addScaleBox();
+	populateApartmentLayerGroupsAndRefreshView("ALL");
 	populateStationLayerGroupsAndRefreshView("ALL");
 
 });
+
+function populateApartmentLayerGroupsAndRefreshView(costBand) {
+	info.update();
+	$.getJSON('/api/apartments', function(data) {
+		addApartmentLayers(data, costBand);
+	});
+}
+
+function addApartmentLayers(apartmentData, costBand) {
+	apartments = {};
+	apartments["ALL"] = [];
+	for (i = 0; i < apartmentData.length; i++) {
+		(function() {
+			// go through each apartment
+			var apartment = apartmentData[i];
+			feature = {
+				type : 'Feature',
+				geometry : {
+					type : 'Point',
+					coordinates : [apartment.lng, apartment.lat]
+				},
+				properties : {
+					title : apartment.address,
+					description : "Bedrooms: " + apartment.bedrooms + "<br />Rent/month: " + apartment.rent_amt  + "<br />" + apartment.link,
+					'marker-size' : 'large',
+					'marker-color' : accessTypeColors[accessTypeWheelchair],
+					'marker-symbol' : 'building'
+				}
+			};
+			apartments["ALL"].push(feature);
+		})(); 
+	}
+	
+	
+	apartmentLayerGroups["ALL"] = L.mapbox.featureLayer(apartments["ALL"]);
+	apartmentLayerGroups["ALL"].on('click', function(e) {
+		lng = e.layer.feature.geometry.coordinates[1];
+		lat = e.layer.feature.geometry.coordinates[0];
+		name = e.layer.feature.properties.title;
+		updateYelpResults(lng, lat, name);
+		if (infoVisible) {
+			info.removeFrom(map);
+			infoVisible = false;
+		}
+		var zoom = Math.max(15, map.getZoom());
+		map.setView(new L.LatLng(lng, lat), zoom, {
+			animate : true,
+		});
+	}); 
+
+	map.addLayer(apartmentLayerGroups["ALL"]);
+	
+}
 
 function clearStationLayers() {
 	isFirstView = false;
@@ -67,11 +124,11 @@ function clearStationLayers() {
 function populateStationLayerGroupsAndRefreshView(line) {
 	info.update();
 	$.getJSON('/septa/stations/line/' + line, function(data) {
-		addLayersAndShow(data, line);
+		addStationLayers(data, line);
 	});
 }
 
-function addLayersAndShow(stationData, line) {
+function addStationLayers(stationData, line) {
 	stations = {};
 	stations[accessTypeWheelchair] = [];
 	stations[accessTypeStairsOnly] = [];
@@ -98,7 +155,7 @@ function addLayersAndShow(stationData, line) {
 			})();
 		}
 		info.update(getLineName(line));
-		legend.update('severity');
+		//legend.update('severity');
 		
 		for ( i = 0; i < accessTypes.length; i++) {
 			stationLayerGroups[accessTypes[i]] = L.mapbox.featureLayer(stations[accessTypes[i]]);
@@ -272,19 +329,7 @@ function addInfoBox() {
 		return this._div;
 	};
 	info.update = function(title) {
-		this._div.innerHTML = '<h4>' + ( title ? title : 'Loading data') + '</h4><div id="stationOutageMessage"></div>';
-		$.getJSON("/septa/elevator/outages", function(data) {
-			if ("errorMessage" in data) {
-				$('#stationOutageMessage').html(data.errorMessage + "<br /></ul>Visit <a target='_blank' href='http://www3.septa.org/hackathon/elevator/'>Septa website</a> or Tweet @SEPTA_SOCIAL for help.</small>");
-			} else if (data.length==0) {
-				$('#stationOutageMessage').html("No reported elevator outages");
-			} else {
-				$('#stationOutageMessage').html("<p class='text-danger'>" +
-					"<strong>" + data.length + " elevator " + (data.length > 1 ? "outages are" : "outage is") + " restricting access.</strong> </p>" + getElevatorOutageStations(data));
-			}
-		});
-	
-		
+		this._div.innerHTML = '<h4>Accessible Apartments</h4>';
 	};
 	info.addTo(map);
 	map.on('click', function(e){

@@ -44,6 +44,16 @@ get '/' do
   erb :accessibility_mapper, :locals => {:page => "mapper"}
 end
 
+get '/apartments' do
+  erb :apartments, :locals => {:page => "apartments"}
+end
+
+get '/api/apartments' do
+  content_type :json
+  propertiesCol = settings.mongo_db['properties']
+  return propertiesCol.find().to_a.to_json
+end
+
 get '/station/:stationid' do
   stationsCol = settings.mongo_db['septa_stations']
   outageTrackerCol = settings.mongo_db['stations_outage_tracker']

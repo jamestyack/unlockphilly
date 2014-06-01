@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Unlock Philly - Mapping accessible stations, pubs, restaurants, shops, museums and more in Philadelphia</title>
+		<title>Unlock Philly - Mapping accessible stations, bars, restaurants, shops, museums and more in Philadelphia</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="Mapping wheelchair accessible stations, pubs, restaurants, shops and more in Philadelphia">
@@ -42,11 +42,14 @@
 					<div class="collapse navbar-collapse">
 						<ul class="nav navbar-nav">
 							<li <% if page=="mapper" %>class="active"<% end %>>
-								<a href="/">Accessiblity Mapper</a>
+								<a href="/">Stations and Elevators</a>
 							</li>
 							<!--<li <% if page=="station" %>class="active"<% end %>>
 								<a href="/station/0">Station Info</a>
 							</li>-->
+							<li <% if page=="apartments" %>class="active"<% end %>>
+								<a href="/apartments">Apartments</a>
+							</li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li>
@@ -177,12 +180,7 @@
 
 
 					<!-- Placed at the end of the document so the pages load faster -->
-					<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 					<!-- Latest compiled and minified JavaScript -->
-					<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-					<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
-					<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js'></script>
-					<script src="js/unlock-philadelphia.js"></script>
 					<script>
 						(function(i, s, o, g, r, a, m) {
 							i['GoogleAnalyticsObject'] = r;
