@@ -54,6 +54,15 @@ get '/api/apartments' do
   return propertiesCol.find().to_a.to_json
 end
 
+get '/station/static/broadwalnut' do
+  stationsCol = settings.mongo_db['septa_stations']
+  outageTrackerCol = settings.mongo_db['stations_outage_tracker']
+  station = stationsCol.find_one({:_id => params[:stationid]})
+  puts params[:stationId]
+  outageHistory = outageTrackerCol.find({"_id.stationId" => params[:stationid]}).sort("_id.outageStart" => :desc)
+  erb :broadwalnut, :locals => {:page => "station", :station => station, :outageHistory => outageHistory.to_a}
+end
+
 get '/station/:stationid' do
   stationsCol = settings.mongo_db['septa_stations']
   outageTrackerCol = settings.mongo_db['stations_outage_tracker']

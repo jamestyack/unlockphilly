@@ -1,0 +1,7 @@
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-06T16:59:34.443Z") }, duration: 7576, isActive: false, outageEnd: ISODate("2014-05-11T23:16:15.329Z"), stop_name: "30th St Station", line_code: "MFL" }
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-13T14:58:07.855Z") }, duration: 85, isActive: false, outageEnd: ISODate("2014-05-13T16:23:20.372Z"), stop_name: "30th St Station", line_code: "MFL" }
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-16T15:36:56.943Z") }, duration: 40, isActive: false, outageEnd: ISODate("2014-05-16T16:17:11.678Z"), stop_name: "30th St Station", line_code: "MFL" }
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-19T12:25:47.536Z") }, duration: 1584, isActive: false, outageEnd: ISODate("2014-05-20T14:49:51.379Z"), stop_name: "30th St Station", line_code: "MFL" }
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-20T22:08:32.705Z") }, duration: 309, isActive: false, outageEnd: ISODate("2014-05-21T03:18:11.226Z"), stop_name: "30th St Station", line_code: "MFL" }
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-31T16:27:16.723Z") }, duration: 46, isActive: false, outageEnd: ISODate("2014-05-31T17:13:20.098Z"), stop_name: "30th St Station", line_code: "MFL" }
+{ _id: { stationId: "21532", outageStart: ISODate("2014-05-31T17:13:35.265Z") }, duration: 278, isActive: true, outageEnd: null, stop_name: "30th St Station", line_code: "MFL" }

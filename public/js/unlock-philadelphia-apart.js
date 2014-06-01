@@ -12,12 +12,17 @@ var accessTypeBusiness = 'AccessTypeBusiness';
 var accessTypes = [accessTypeWheelchair, accessTypeOutage, accessTypeStairsOnly, accessTypeBusiness];
 var accessTypesLabels = ['Accessible station', 'Station with elevator outage', 'Station with restricted/limited access', 'Business listed as accessible on Yelp'];
 var accessTypeColors = {};
+var propertyPriceBands = ['Less than $600/month', '$600-999/month', '$1000+/month'];
 var info;
 var infoVisible=true;
 accessTypeColors[accessTypeWheelchair] = "#1a9641";
 accessTypeColors[accessTypeStairsOnly] = "#bababa";
 accessTypeColors[accessTypeOutage] = "#d7191c";
 accessTypeColors[accessTypeBusiness] = "#0099cc";
+var apartmentColorsByPriceBand = {};
+apartmentColorsByPriceBand["1"] = "#fecc5c";
+apartmentColorsByPriceBand["2"] = "#fd8d3c";
+apartmentColorsByPriceBand["3"] = "#f03b20";
 var twitterCode = "<a href='https://twitter.com/intent/tweet?screen_name=septa' class='twitter-mention-button' data-related='septa'>Tweet to @septa</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>";
 var MAX_YELP_RESULTS = 26;
 
@@ -53,7 +58,7 @@ $(document).ready(function() {
 		}
 	});
 
-	//addLegend();
+	addLegend();
 	addInfoBox();
 	addScaleBox();
 	populateApartmentLayerGroupsAndRefreshView("ALL");
@@ -75,6 +80,7 @@ function addApartmentLayers(apartmentData, costBand) {
 		(function() {
 			// go through each apartment
 			var apartment = apartmentData[i];
+			console.log(JSON.stringify(apartment));
 			feature = {
 				type : 'Feature',
 				geometry : {
@@ -83,9 +89,10 @@ function addApartmentLayers(apartmentData, costBand) {
 				},
 				properties : {
 					title : apartment.address,
-					description : "Bedrooms: " + apartment.bedrooms + "<br />Rent/month: " + apartment.rent_amt  + "<br />" + apartment.link,
+					description : "<strong>Bedrooms</strong>: " + apartment.bedrooms + "<br /><strong>Door width</strong>: " + apartment.door_width + "<br /><strong>Unit entry</strong>: " + apartment.unit_entry
+					    + "<br /><strong>Rent/month: " + apartment.rent_amt  + "</strong><br /><a target='_blank' href='" + apartment.link + "'>View full details</a>",
 					'marker-size' : 'large',
-					'marker-color' : accessTypeColors[accessTypeWheelchair],
+					'marker-color' : apartmentColorsByPriceBand[apartment.band],
 					'marker-symbol' : 'building'
 				}
 			};
@@ -104,7 +111,7 @@ function addApartmentLayers(apartmentData, costBand) {
 			info.removeFrom(map);
 			infoVisible = false;
 		}
-		var zoom = Math.max(15, map.getZoom());
+		var zoom = Math.max(14, map.getZoom());
 		map.setView(new L.LatLng(lng, lat), zoom, {
 			animate : true,
 		});
@@ -298,7 +305,7 @@ function formatStation(station) {
 	} else {
 		response += (station.wheelchair_boarding == "1" ? "" : "Not ") + "Wheelchair Accessible";
 	}
-	return response + " <a href='" + window.location.href + "station/" + station._id + "'>more ...</a>";
+	return response;
 }
 
 function getLine(station) {
@@ -362,8 +369,9 @@ function addLegend() {
 	});
 	legend.onAdd = function(map) {
 		legendDiv = L.DomUtil.create('div', 'info legend');
-		for (var i = 0; i < accessTypes.length; i++) {
-			legendDiv.innerHTML += '<i style="background:' + accessTypeColors[accessTypes[i]] + '"></i> ' + accessTypesLabels[i] + '<br>';
+		legendDiv.innerHTML += '<i></i> ' + "Rent bands" + '<br>'
+		for (var i = 0; i < propertyPriceBands.length; i++) {
+			legendDiv.innerHTML += '<i style="background:' + apartmentColorsByPriceBand[i+1] + '"></i> ' + propertyPriceBands[i] + '<br>';
 		}
 		return legendDiv;
 	};

@@ -233,6 +233,7 @@ function getOutageLength(mins) {
 
 function formatStation(station) {
 	var response = "";
+	
 	if (station.elevatorOutage) {
 		response += "<span class='red'>Elevator outage reported approx " + getOutageLength(station.outageTracker.duration) + " ago</span><br />" + station.elevatorOutage.elevator + "<br/>"
 			+ station.elevatorOutage.message + "<br/>"
@@ -241,7 +242,7 @@ function formatStation(station) {
 	} else {
 		response += (station.wheelchair_boarding == "1" ? "" : "Not ") + "Wheelchair Accessible";
 	}
-	return response + " <a href='" + window.location.href + "station/" + station._id + "'>more ...</a>";
+	return response + " <a href='" + window.location.href + "station/" + (station._id === "1282" ? "static/broadwalnut" : station._id) + "'>more ...</a>";
 }
 
 function getLine(station) {
